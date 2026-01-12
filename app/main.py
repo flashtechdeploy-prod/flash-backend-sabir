@@ -31,13 +31,22 @@ app = FastAPI(
 # ----------------------------
 @app.on_event("startup")
 async def startup():
-    async with engine.begin() as conn:
-        # checkfirst=True skips tables that already exist
-        await conn.run_sync(lambda sync_conn: Base.metadata.create_all(sync_conn, checkfirst=True))
+    # Only run database sync if explicitly enabled or locally
+    if os.getenv("SYNC_DB_ON_STARTUP", "false").lower() == "true":
+        try:
+            async with engine.begin() as conn:
+                await conn.run_sync(lambda sync_conn: Base.metadata.create_all(sync_conn, checkfirst=True))
+            print("[Startup] Database tables verified/created")
+        except Exception as e:
+            print(f"[Startup Error] Failed to sync database: {e}")
     
-    # Disable startup tasks by default
-    if False: # Original: if settings.RUN_STARTUP_TASKS:
-        await run_startup_tasks()  # Seed RBAC and run migrations
+    # Disable startup tasks by default on Vercel
+    if os.getenv("RUN_STARTUP_TASKS_ON_STARTUP", "false").lower() == "true":
+        try:
+            await run_startup_tasks()
+            print("[Startup] Startup tasks completed")
+        except Exception as e:
+            print(f"[Startup Error] Failed to run startup tasks: {e}")
 
 # ----------------------------
 # CORS MIDDLEWARE
