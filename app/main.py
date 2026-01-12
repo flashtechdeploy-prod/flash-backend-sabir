@@ -35,7 +35,8 @@ async def startup():
         # checkfirst=True skips tables that already exist
         await conn.run_sync(lambda sync_conn: Base.metadata.create_all(sync_conn, checkfirst=True))
     
-    if settings.RUN_STARTUP_TASKS:
+    # Disable startup tasks by default
+    if False: # Original: if settings.RUN_STARTUP_TASKS:
         await run_startup_tasks()  # Seed RBAC and run migrations
 
 # ----------------------------
@@ -43,8 +44,8 @@ async def startup():
 # ----------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.allowed_origins_list,
-    allow_credentials="*" not in settings.allowed_origins_list,
+    allow_origins=["*"], # Relaxed CORS
+    allow_credentials=True, # Relaxed CORS
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"],
