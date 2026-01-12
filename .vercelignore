@@ -1,0 +1,17 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.git/
+.env
+uploads/
+tests/
+alembic/
+docs/
+openapi_generated.json
+test_api.ps1
+startup.py
+start_backend.bat
+check_tables.py
+DATABASE_SCHEMA.md
+RBAC_IMPLEMENTATION_SUMMARY.md
