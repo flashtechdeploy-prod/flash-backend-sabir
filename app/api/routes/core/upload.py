@@ -64,7 +64,17 @@ async def upload_file(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"File upload failed: {str(e)}")
+        import traceback
+        trace = traceback.format_exc()
+        print(f"[Upload Error] {str(e)}\n{trace}")
+        raise HTTPException(
+            status_code=500, 
+            detail={
+                "message": "File upload failed",
+                "error": str(e),
+                "traceback": trace
+            }
+        )
 
 
 @router.get("/storage/status")
