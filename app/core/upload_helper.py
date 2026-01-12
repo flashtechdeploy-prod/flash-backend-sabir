@@ -31,11 +31,7 @@ def _get_b2_client():
         endpoint_url=settings.B2_ENDPOINT_URL,
         aws_access_key_id=settings.B2_KEY_ID,
         aws_secret_access_key=settings.B2_APPLICATION_KEY,
-<<<<<<< HEAD
         region_name="us-east-005",
-=======
-        config=boto3.session.Config(signature_version='s3v4')
->>>>>>> d71b15ad3e3479ff352d27dcdd9004eff9b12847
     )
 
 
