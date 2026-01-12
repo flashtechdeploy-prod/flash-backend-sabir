@@ -33,7 +33,6 @@ class Settings(BaseSettings):
     # Uploads (legacy local path)
     UPLOADS_DIR: str = os.path.join(_PROJECT_ROOT, "uploads")
     
-    # Backblaze B2 Storage
     B2_KEY_ID: str = "005840bd883f2c00000000003"
     B2_APPLICATION_KEY: str = "K0052OPof6wSuwuRGVX7uyOElwfMMwI"
     B2_BUCKET_NAME: str = "flash-erp-new"

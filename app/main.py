@@ -53,8 +53,14 @@ async def startup():
 # ----------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Relaxed CORS
-    allow_credentials=True, # Relaxed CORS
+    allow_origins=settings.allowed_origins_list + [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://flash-backend-sabir.vercel.app",
+        "https://flash-frontend-sabir.vercel.app",
+        "*",  # Allow all as fallback for development
+    ],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"],

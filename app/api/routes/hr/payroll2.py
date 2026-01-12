@@ -380,10 +380,15 @@ async def payroll2_range_report(
                 pass
 
         alloc = alloc_by_emp.get(int(e.id))
+        # Build employee name - use name field or combine first_name + last_name
+        employee_name = e.name or ""
+        if not employee_name and (e.first_name or e.last_name):
+            employee_name = f"{e.first_name or ''} {e.last_name or ''}".strip()
+        
         rows.append({
             "employee_db_id": e.id,
             "employee_id": employee_id,
-            "name": e.name or "",
+            "name": employee_name,
             "serial_no": e.serial_no,
             "fss_no": e.fss_no,
             "client_id": (alloc or {}).get("client_id"),

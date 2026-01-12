@@ -68,7 +68,7 @@ api_router.include_router(general_inventory.router, prefix="/general-inventory",
 api_router.include_router(restricted_inventory.router, prefix="/restricted-inventory", tags=["Weapons & Restrict"])
 
 # --- Client ---
-api_router.include_router(client_management, prefix="/client-management", tags=["Client & Contracts"])
+api_router.include_router(client_management, prefix="", tags=["Client & Contracts"])
 
 # --- Finance ---
 api_router.include_router(exports.router, prefix="/exports", tags=["Exports"])

@@ -988,7 +988,9 @@ async def upload_client_document(
     db: Session = Depends(get_db),
 ) -> ClientDocumentOut:
     from app.core.upload_helper import upload_file_with_prefix
+    import logging
     
+    logger = logging.getLogger(__name__)
     _get_client(db, client_id)
 
     if not document_type or not str(document_type).strip():
@@ -997,14 +999,21 @@ async def upload_client_document(
     content = await file.read()
     ct = file.content_type or "application/octet-stream"
 
-    # Upload to Supabase Storage
-    url, new_filename = await upload_file_with_prefix(
-        content=content,
-        original_filename=file.filename or "",
-        prefix=f"client_{client_id}",
-        content_type=ct,
-        subdir=f"clients/{client_id}",
-    )
+    logger.info(f"Uploading client document: {file.filename} for client_id: {client_id}")
+
+    # Upload to Backblaze B2 Storage
+    try:
+        url, new_filename = await upload_file_with_prefix(
+            content=content,
+            original_filename=file.filename or "",
+            prefix=f"client_{client_id}",
+            content_type=ct,
+            subdir=f"clients/{client_id}",
+        )
+        logger.info(f"Client document uploaded: {new_filename} -> {url}")
+    except Exception as e:
+        logger.error(f"Failed to upload client document: {str(e)}", exc_info=True)
+        raise
 
     row = ClientDocument(
         client_id=client_id,

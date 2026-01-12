@@ -1,4 +1,5 @@
 import os
+import logging
 
 from fastapi import APIRouter, File, HTTPException, UploadFile, Depends, Query
 from sqlalchemy.orm import Session
@@ -12,6 +13,7 @@ from app.models.core.user import User
 from app.core.upload_helper import upload_file_with_prefix
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.post("/upload", response_model=FileResponse)
@@ -23,7 +25,7 @@ async def upload_file(
 ):
     """
     Upload a file and return its URL.
-    Stores file in Supabase Storage and saves metadata to the database.
+    Stores file in Backblaze B2 Storage and saves metadata to the database.
     """
     try:
         # Validate file
@@ -36,7 +38,9 @@ async def upload_file(
         # Determine MIME type if missing
         mime_type = file.content_type or "application/octet-stream"
         
-        # Upload to Supabase Storage
+        logger.info(f"Uploading file: {file.filename} to folder: {folder}")
+        
+        # Upload to Backblaze B2 Storage
         public_url, new_filename = await upload_file_with_prefix(
             content=content,
             original_filename=file.filename,
@@ -45,12 +49,14 @@ async def upload_file(
             subdir=folder,
         )
         
+        logger.info(f"File uploaded successfully: {new_filename} -> {public_url}")
+        
         # Save to database
         db_file = FileModel(
             filename=file.filename,
             unique_filename=new_filename,
             path=public_url,
-            storage_type="local",
+            storage_type="b2",
             mime_type=mime_type,
             size=len(content),
             user_id=current_user.id
@@ -64,6 +70,7 @@ async def upload_file(
     except HTTPException:
         raise
     except Exception as e:
+        logger.error(f"File upload failed: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"File upload failed: {str(e)}")
 
 

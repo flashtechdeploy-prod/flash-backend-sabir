@@ -19,11 +19,19 @@ from app.core.config import settings
 # Initialize Backblaze B2 S3-compatible client
 def _get_b2_client():
     """Get Backblaze B2 S3-compatible client."""
+    # Validate B2 credentials
+    if not settings.B2_KEY_ID or not settings.B2_APPLICATION_KEY or not settings.B2_BUCKET_NAME:
+        raise HTTPException(
+            status_code=500,
+            detail="B2 credentials not configured. Please set B2_KEY_ID, B2_APPLICATION_KEY, and B2_BUCKET_NAME environment variables."
+        )
+    
     return boto3.client(
         "s3",
         endpoint_url=settings.B2_ENDPOINT_URL,
         aws_access_key_id=settings.B2_KEY_ID,
         aws_secret_access_key=settings.B2_APPLICATION_KEY,
+        region_name="us-east-005",
     )
 
 
