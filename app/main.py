@@ -99,4 +99,12 @@ async def health_check():
             await conn.execute(text("SELECT 1"))
         return {"status": "healthy"}
     except Exception as e:
-        return JSONResponse(status_code=500, content={"status": "unhealthy", "detail": str(e)})
+        import traceback
+        return JSONResponse(
+            status_code=500, 
+            content={
+                "status": "unhealthy", 
+                "detail": str(e),
+                "traceback": traceback.format_exc()
+            }
+        )
