@@ -20,7 +20,11 @@ def _get_connect_args(database_url: str) -> dict:
         
         # Only require SSL for remote/cloud databases
         if not is_local:
-            connect_args["ssl"] = True
+            import ssl
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+            connect_args["ssl"] = ctx
         
         return connect_args
     except Exception:
