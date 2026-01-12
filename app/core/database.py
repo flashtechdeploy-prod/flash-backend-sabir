@@ -20,7 +20,7 @@ def _get_connect_args(database_url: str) -> dict:
         
         # Only require SSL for remote/cloud databases
         if not is_local:
-            connect_args["ssl"] = "require"
+            connect_args["ssl"] = True
         
         return connect_args
     except Exception:
